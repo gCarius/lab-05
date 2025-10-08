@@ -1,6 +1,7 @@
 package com.example.lab5_starter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 public class CityArrayAdapter extends ArrayAdapter<City> {
     private ArrayList<City> cities;
     private Context context;
+    private City selectedCity;
+
 
     public CityArrayAdapter(Context context, ArrayList<City> cities){
         super(context, 0, cities);
@@ -36,6 +39,19 @@ public class CityArrayAdapter extends ArrayAdapter<City> {
         movieName.setText(city.getName());
         movieYear.setText(city.getProvince());
 
+        if (city != null && city.equals(selectedCity)) {
+            view.setBackgroundColor(Color.parseColor("#FFCDD2"));  // selected city shaded red
+        } else {
+            view.setBackgroundColor(Color.TRANSPARENT); // default background
+        }
+
         return view;
+    }
+
+
+
+    public void setSelectedCity(City city) {
+        this.selectedCity = city;
+        notifyDataSetChanged(); // redraw the list
     }
 }

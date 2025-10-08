@@ -17,6 +17,7 @@ public class CityDialogFragment extends DialogFragment {
     interface CityDialogListener {
         void updateCity(City city, String title, String year);
         void addCity(City city);
+        void deleteCity(City city);
     }
     private CityDialogListener listener;
 
@@ -56,24 +57,47 @@ public class CityDialogFragment extends DialogFragment {
             assert city != null;
             editMovieName.setText(city.getName());
             editMovieYear.setText(city.getProvince());
-        }
-        else {
+        } else {
             city = null;}
 
+        if (Objects.equals(tag, "Delete City") && bundle != null) {
+            city = (City) bundle.getSerializable("City");
+            assert city != null;
+            editMovieName.setText(city.getName());
+            editMovieYear.setText(city.getProvince());
+            editMovieName.setEnabled(false);
+            editMovieYear.setEnabled(false);
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        return builder
-                .setView(view)
-                .setTitle("City Details")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Continue", (dialog, which) -> {
-                    String title = editMovieName.getText().toString();
-                    String year = editMovieYear.getText().toString();
-                    if (Objects.equals(tag, "City Details")) {
-                        listener.updateCity(city, title, year);
-                    } else {
-                        listener.addCity(new City(title, year));
-                    }
-                })
-                .create();
+        builder.setView(view);
+
+        if (Objects.equals(tag, "Delete City")) {
+            builder.setTitle("Delete City");
+            City cityTemp = city;
+            builder.setPositiveButton("Delete", (dialog, which) -> listener.deleteCity(cityTemp));
+            builder.setNegativeButton("Cancel", null);
+        }
+        else if (Objects.equals(tag, "City Details")) {
+            builder.setTitle("Edit City");
+            City cityTemp = city;
+            builder.setPositiveButton("Continue", (dialog, which) -> {
+                String title = editMovieName.getText().toString();
+                String year = editMovieYear.getText().toString();
+                listener.updateCity(cityTemp, title, year);
+            });
+            builder.setNegativeButton("Cancel", null);
+        }
+        else {
+            builder.setTitle("Add City");
+            builder.setPositiveButton("Add", (dialog, which) -> {
+                String title = editMovieName.getText().toString();
+                String year = editMovieYear.getText().toString();
+                listener.addCity(new City(title, year));
+            });
+            builder.setNegativeButton("Cancel", null);
+        }
+
+        return builder.create();
     }
 }
